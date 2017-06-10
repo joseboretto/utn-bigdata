@@ -6,13 +6,14 @@ import pandas as pd
 connection = sqlite3.connect('input/database.sqlite')
 
 class Data(object):
-    def getMatchesFromDataBase(self):
+    def getMatchesFromDataBase(self, teamApiId):
         # obtenemos las filas que queremos del Leicester City
         sqlQuery = ' SELECT * FROM Match' \
                    ' WHERE' \
-                   ' home_team_api_id = 8197 OR away_team_api_id = 8197 ' \
+                   ' home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) +  \
                    ' AND league_id = 1729 ' \
                    ' AND season = 2015/2016'
+        print (sqlQuery)
         # ejecutamos la consulta
         return pd.read_sql_query(sqlQuery, connection)
 
@@ -111,12 +112,37 @@ class Data(object):
         ]]
         return matches_features
 
-    def xmlparser(self, matches):
+    def getPossesionAverage(self, matches, homeTeamApiId):
         # Datta escondida en los XML
         # https://www.kaggle.com/njitram/exploring-the-incident-data
+        result = []
+        numberOfRows = len(matches['possession'])
         possesionMatrix = matches[['possession']]
-        possesion = possesionMatrix['possession'][0]
-        print possesion
+        homeTeamApiIdMatrix = matches[['home_team_api_id']]
+
+        # recorremos todas las filas
+        for x in range(0, numberOfRows):
+            possesionXMLstring = possesionMatrix['possession'][x]
+            root = ET.fromstring(possesionXMLstring)
+            homeposAverage = 0 #la posesion es complementaria, tomamos solo una
+            numberOfValues = len(root._children)
+            # recorremos todas el xml
+            for value in root:
+                    homeposAverage += int(value.find('./homepos').text)
+
+            #calculamos el promedio
+            homeposAverage = homeposAverage / numberOfValues
+            # necesitamos saber de que equipo es la possesion
+            # el resultado es una matrix de 2xn , el primero siempre es el home.
+            if homeTeamApiId == homeTeamApiIdMatrix['home_team_api_id'][x]:
+                result.append(homeposAverage)
+            else:
+                result.append(1-homeposAverage)
+
+
+        return result
+
+
         # <possession>
         #    <value>
         #       <comment>39</comment>
@@ -168,17 +194,75 @@ class Data(object):
         #       <id>3646942</id>
         #    </value>
         # </possession>
-        root = ET.fromstring(possesion)
-        awayposAverage = 0
-        homeposAverage = 0
-        numberOfValues = len(root._children)
-        for value in root:
-            awayposAverage += int(value.find('./awaypos').text)
-            homeposAverage += int(value.find('./homepos').text)
 
-        print awayposAverage, homeposAverage
-        awayposAverage = awayposAverage / numberOfValues
-        homeposAverage = homeposAverage / numberOfValues
+    def getNumberOfFoulCommit(self, matches,homeTeamApiId):
+        # Datta escondida en los XML
+        # https://www.kaggle.com/njitram/exploring-the-incident-data
+        result = []
+        numberOfRows = len(matches['foulcommit'])
+        possesionMatrix = matches[['foulcommit']]
+        homeTeamApiIdMatrix = matches[['home_team_api_id']]
+        # recorremos todas las filas
+        for x in range(0, numberOfRows):
+            # print ('match id ' + str(matches['id'][x]))
+            possesionXMLstring = possesionMatrix['foulcommit'][x]
+            root = ET.fromstring(possesionXMLstring)
+            numberOfFoulCommit = 0  # la posesion es complementaria, tomamos solo una
+            numberOfValues = len(root._children)
+            # recorremos todas el xml
+            for value in root:
+                teamXml = value.find('./team')
+                if teamXml is not None:
+                    if(int(teamXml.text) == homeTeamApiId):
+                        numberOfFoulCommit += 1
 
-        print awayposAverage, homeposAverage
-        return awayposAverage
+            # print numberOfFoulCommit
+            result.append(numberOfFoulCommit)
+
+        return result
+        # <foulcommit>
+        #     <value>
+        #         <stats>
+        #             <foulscommitted>1</foulscommitted>
+        #         </stats>
+        #         <event_incident_typefk>37</event_incident_typefk>
+        #         <coordinates>
+        #             <value>42</value>
+        #             <value>47</value>
+        #         </coordinates>
+        #         <elapsed>1</elapsed>
+        #         <player2>36012</player2>
+        #         <player1>67850</player1>
+        #         <sortorder>1</sortorder>
+        #         <team>8197</team>
+        #         <n>215</n>
+        #         <type>foulcommit</type>
+        #         <id>3645732</id>
+        #     </value>
+        # </foulcommit>
+
+    def getWinnerFromTeamId(self, matches, homeTeamApiId):
+        numberOfRows = len(matches['id'])
+        home_team_api_idMatrix = matches[['home_team_api_id']]
+        home_team_goalMatrix = matches[['home_team_goal']]
+        away_team_goalMatrix = matches[['away_team_goal']]
+
+        result = []
+        # recorremos todas las filas
+        for x in range(0, numberOfRows):
+            if home_team_goalMatrix['home_team_goal'][x] >= away_team_goalMatrix['away_team_goal'][x]:
+                homeWon = True
+            else:
+                homeWon = False
+
+            if home_team_api_idMatrix['home_team_api_id'][x] == homeTeamApiId:
+                homeWon
+            else:
+                homeWon =not homeWon
+
+            if homeWon:
+                result.append('g')
+            else:
+                result.append('r')
+
+        return result
