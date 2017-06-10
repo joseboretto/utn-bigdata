@@ -5,12 +5,13 @@ import pandas as pd
 # creamos una carpeta input dentro del proyecto y copiamos la base de datos
 connection = sqlite3.connect('input/database.sqlite')
 
+
 class Data(object):
     def getMatchesFromDataBase(self, teamApiId):
         # obtenemos las filas que queremos del Leicester City
         sqlQuery = ' SELECT * FROM Match' \
                    ' WHERE' \
-                   ' home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) +  \
+                   ' home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) + \
                    ' AND league_id = 1729 ' \
                    ' AND season = 2015/2016'
         print (sqlQuery)
@@ -124,21 +125,20 @@ class Data(object):
         for x in range(0, numberOfRows):
             possesionXMLstring = possesionMatrix['possession'][x]
             root = ET.fromstring(possesionXMLstring)
-            homeposAverage = 0 #la posesion es complementaria, tomamos solo una
+            homeposAverage = 0  # la posesion es complementaria, tomamos solo una
             numberOfValues = len(root._children)
             # recorremos todas el xml
             for value in root:
-                    homeposAverage += int(value.find('./homepos').text)
+                homeposAverage += int(value.find('./homepos').text)
 
-            #calculamos el promedio
+            # calculamos el promedio
             homeposAverage = homeposAverage / numberOfValues
             # necesitamos saber de que equipo es la possesion
             # el resultado es una matrix de 2xn , el primero siempre es el home.
             if homeTeamApiId == homeTeamApiIdMatrix['home_team_api_id'][x]:
                 result.append(homeposAverage)
             else:
-                result.append(1-homeposAverage)
-
+                result.append(1 - homeposAverage)
 
         return result
 
@@ -195,7 +195,7 @@ class Data(object):
         #    </value>
         # </possession>
 
-    def getNumberOfFoulCommit(self, matches,homeTeamApiId):
+    def getNumberOfFoulCommit(self, matches, homeTeamApiId):
         # Datta escondida en los XML
         # https://www.kaggle.com/njitram/exploring-the-incident-data
         result = []
@@ -213,7 +213,7 @@ class Data(object):
             for value in root:
                 teamXml = value.find('./team')
                 if teamXml is not None:
-                    if(int(teamXml.text) == homeTeamApiId):
+                    if (int(teamXml.text) == homeTeamApiId):
                         numberOfFoulCommit += 1
 
             # print numberOfFoulCommit
@@ -250,16 +250,22 @@ class Data(object):
         result = []
         # recorremos todas las filas
         for x in range(0, numberOfRows):
-            if home_team_goalMatrix['home_team_goal'][x] >= away_team_goalMatrix['away_team_goal'][x]:
+            # como le fue al local?
+            if home_team_goalMatrix['home_team_goal'][x] == away_team_goalMatrix['away_team_goal'][x]:
+                result.append('b')
+                continue
+
+            if home_team_goalMatrix['home_team_goal'][x] > away_team_goalMatrix['away_team_goal'][x]:
                 homeWon = True
             else:
                 homeWon = False
-
+            # como le fue al equipo que estoy analizando?
             if home_team_api_idMatrix['home_team_api_id'][x] == homeTeamApiId:
                 homeWon
             else:
-                homeWon =not homeWon
+                homeWon = not homeWon
 
+            # elijo el color
             if homeWon:
                 result.append('g')
             else:

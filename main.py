@@ -1,8 +1,9 @@
 from data import Data
 import matplotlib.pyplot as plt
 
-# Leicester City
-teamApiId = 8197
+# Leicester City , teamApiId = 8197
+# Manchester City , teamApiId =  8456
+teamApiId = 8456
 dataObject = Data()
 matches = dataObject.getMatchesFromDataBase(teamApiId)
 # print (matches)
