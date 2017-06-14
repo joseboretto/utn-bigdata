@@ -272,3 +272,15 @@ class Data(object):
                 result.append('r')
 
         return result
+
+    def getStage(self, matches):
+        numberOfRows = len(matches['id'])
+        stageMatrix = matches[['stage']]
+
+        result = []
+        # recorremos todas las filas
+        for x in range(0, numberOfRows):
+            stageNumber = stageMatrix['stage'][x]
+            result.append(stageNumber)
+
+        return result

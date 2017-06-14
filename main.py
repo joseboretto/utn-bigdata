@@ -9,12 +9,18 @@ matches = dataObject.getMatchesFromDataBase(teamApiId)
 # print (matches)
 
 posPossesionAverage = dataObject.getPossesionAverage(matches, teamApiId)
+print ""
 print (posPossesionAverage)
 print (len(posPossesionAverage))
 
 numberOfFoulCommit = dataObject.getNumberOfFoulCommit(matches, teamApiId)
 print (numberOfFoulCommit)
 print (len(numberOfFoulCommit))
+
+
+stage = dataObject.getStage(matches)
+print (stage)
+print (len(stage))
 
 winnerFromTeamId =  dataObject.getWinnerFromTeamId(matches,teamApiId)
 print winnerFromTeamId
