@@ -12,7 +12,6 @@ class Data(object):
         sqlQuery = ' SELECT * FROM Match' \
                    ' WHERE' \
                    '( home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) + ' )'+ \
-                   ' AND league_id = 1729 ' \
                    ' AND season = \'2015/2016\' ' \
                    ' ORDER BY stage'
         print (sqlQuery)
@@ -130,7 +129,9 @@ class Data(object):
             numberOfValues = len(root._children)
             # recorremos todas el xml
             for value in root:
-                homeposAverage += int(value.find('./homepos').text)
+                homeposValue =value.find('./homepos')
+                if homeposValue is not None:
+                    homeposAverage += int(homeposValue.text)
 
             # calculamos el promedio
             homeposAverage = homeposAverage / numberOfValues
@@ -308,3 +309,10 @@ class Data(object):
 
         return result
 
+    def getTeamName(self,teamApiId):
+        sqlQuery = ' SELECT Team.team_long_name FROM Team WHERE team_api_id='+ str(teamApiId)
+        print (sqlQuery)
+        queryResult = pd.read_sql_query(sqlQuery, connection)
+
+        # ejecutamos la consulta
+        return str(queryResult['team_long_name'].values)
