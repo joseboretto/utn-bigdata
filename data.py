@@ -285,3 +285,26 @@ class Data(object):
             result.append(stageNumber)
 
         return result
+
+
+    def getNumberOfShotOn(self, matches, homeTeamApiId):
+        result = []
+        numberOfRows = len(matches['shoton'])
+        shotOnMatrix = matches[['shoton']]
+        homeTeamApiIdMatrix = matches[['home_team_api_id']]
+        # recorro las filas
+        for x in range(0, numberOfRows):
+            shotonXMLstring = shotOnMatrix['shoton'][x]
+            root = ET.fromstring(shotonXMLstring)
+            numberOfShotOn = 0
+            nomberOfValues = len(root._children)
+            # recorro el xml de la columna
+            for value in root:
+                teamXml = value.find('./team')
+                if teamXml is not None:
+                    if (int(teamXml.text) == homeTeamApiId):
+                        numberOfShotOn += 1
+            result.append(numberOfShotOn)
+
+        return result
+
