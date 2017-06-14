@@ -1,6 +1,7 @@
-#
+# Databse
 *.sqlite
-input/
+# Intelli J
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
