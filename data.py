@@ -329,3 +329,15 @@ class Data(object):
 
         # ejecutamos la consulta
         return str(queryResult['team_long_name'].values)
+
+    def tranformColorsInNumber(self,colourArray):
+        result = []
+        for colour in colourArray:
+            if (colour == 'b'):
+                result.append(0)
+            if (colour == 'r'):
+                result.append(-1)
+            if (colour == 'g'):
+                result.append(1)
+
+        return result

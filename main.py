@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from pandas.plotting import scatter_matrix
+# from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
 
 # https://www.premierleague.com/clubs/12/club/stats?se=42
 season = ' \'2015/2016\' '
@@ -47,6 +50,13 @@ matchResult = dataObject.countMatchResult(winnerFromTeamId)
 print  matchResult
 X = np.column_stack((stage, numberOfFoulCommit, posPossesionAverage, numberOfShotOn))
 print X
+print X.shape
+
+Y = dataObject.tranformColorsInNumber(winnerFromTeamId)
+
+X_new = SelectKBest(chi2, k=2).fit_transform(X, Y)
+print X_new
+print X_new.shape
 
 df = pd.DataFrame(X, columns=['Stage', 'Cantidad de faltas', '% Posesion', 'Cantidad de tiros al arco'])
 # Doc: https://pandas.pydata.org/pandas-docs/stable/visualization.html#scatter-matrix-plot
@@ -54,4 +64,6 @@ scatter_matrix(df, figsize=(10, 10), diagonal='hist', color=winnerFromTeamId)
 title = 'Equipo: ' + teamName + ' -- Temporada:' + season + ' -- Cantidad de partidos:' + str(numberOfMatches) + '\n' \
         ' Ganados: ' + str(matchResult[0])+' Enpatados: ' + str(matchResult[1])+' Perdidos: ' + str(matchResult[2])
 plt.suptitle(title)
-plt.show()
+# plt.show()
+
+
