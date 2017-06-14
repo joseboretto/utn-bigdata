@@ -139,7 +139,7 @@ class Data(object):
             if homeTeamApiId == homeTeamApiIdMatrix['home_team_api_id'][x]:
                 result.append(homeposAverage)
             else:
-                result.append(1 - homeposAverage)
+                result.append(100 - homeposAverage)
 
         return result
 
