@@ -7,12 +7,12 @@ connection = sqlite3.connect('input/database.sqlite')
 
 
 class Data(object):
-    def getMatchesFromDataBase(self, teamApiId):
+    def getMatchesFromDataBase(self, teamApiId ,season):
         # obtenemos las filas que queremos del Leicester City
         sqlQuery = ' SELECT * FROM Match' \
                    ' WHERE' \
                    '( home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) + ' )'+ \
-                   ' AND season = \'2015/2016\' ' \
+                   ' AND season = ' + season + \
                    ' ORDER BY stage'
         print (sqlQuery)
         # ejecutamos la consulta
@@ -275,6 +275,19 @@ class Data(object):
 
         return result
 
+    def countMatchResult(self,colourArray):
+        win = 0
+        tie = 0
+        lose =0
+        for colour in colourArray:
+            if (colour=='b'):
+                tie+=1
+            if (colour=='r'):
+                lose+=1
+            if (colour=='g'):
+                win+=1
+
+        return [win,tie,lose]
     def getStage(self, matches):
         numberOfRows = len(matches['id'])
         stageMatrix = matches[['stage']]
