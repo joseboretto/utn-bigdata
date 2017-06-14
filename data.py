@@ -11,9 +11,9 @@ class Data(object):
         # obtenemos las filas que queremos del Leicester City
         sqlQuery = ' SELECT * FROM Match' \
                    ' WHERE' \
-                   ' home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) + \
+                   '( home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) + ' )'+ \
                    ' AND league_id = 1729 ' \
-                   ' AND season = 2015/2016'
+                   ' AND season = \'2015/2016\' '
         print (sqlQuery)
         # ejecutamos la consulta
         return pd.read_sql_query(sqlQuery, connection)
