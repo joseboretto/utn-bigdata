@@ -1,6 +1,7 @@
 import sqlite3
 import xml.etree.ElementTree as ET
 import pandas as pd
+from datetime import datetime
 
 # creamos una carpeta input dentro del proyecto y copiamos la base de datos
 connection = sqlite3.connect('input/database.sqlite')
@@ -339,5 +340,24 @@ class Data(object):
                 result.append(-1)
             if (colour == 'g'):
                 result.append(1)
+
+        return result
+
+    def getMonth(self, matches):
+        result = []
+        numberOfRows = len(matches['id'])
+        dateMatrix = matches[['date']]
+
+        for x in range(0, numberOfRows):
+            date_string = dateMatrix['date'][x]  # formato devuelto 2008 - 08 - 17 00:00:00
+            print date_string
+            datetime_object = pd.to_datetime(date_string)
+            # convierto de string a date (revisar si '%m' es mes con numero, %b es mes con tres letras: JAN,FEB,...
+
+            # datetime_object = datetime.strptime(date_string, '%Y-%m-%d %I:%M:%S')
+            # del date solo tomo el mes
+            mes = datetime_object.month
+            # agrego mes del match al vector
+            result.append(mes)
 
         return result

@@ -42,28 +42,34 @@ print "Stage o Fecha del torneo"
 print (stage)
 print (len(stage))
 
+months = dataObject.getMonth(matches)
+print "Meses"
+print (months)
+print (len(months))
+
+
 winnerFromTeamId = dataObject.getWinnerFromTeamId(matches, teamApiId)
 print "Resultado de cada partido: g=green=gano , r=red=perdio , b=blue=enpato"
 print winnerFromTeamId
 
 matchResult = dataObject.countMatchResult(winnerFromTeamId)
 print  matchResult
-X = np.column_stack((stage, numberOfFoulCommit, posPossesionAverage, numberOfShotOn))
-print X
-print X.shape
+X = np.column_stack((stage, numberOfFoulCommit, posPossesionAverage, numberOfShotOn, months))
+# print X
+# print X.shape
+#
+# Y = dataObject.tranformColorsInNumber(winnerFromTeamId)
+#
+# X_new = SelectKBest(chi2, k=2).fit_transform(X, Y)
+# print X_new
+# print X_new.shape
 
-Y = dataObject.tranformColorsInNumber(winnerFromTeamId)
-
-X_new = SelectKBest(chi2, k=2).fit_transform(X, Y)
-print X_new
-print X_new.shape
-
-df = pd.DataFrame(X, columns=['Stage', 'Cantidad de faltas', '% Posesion', 'Cantidad de tiros al arco'])
+df = pd.DataFrame(X, columns=['Stage', 'Cantidad de faltas', '% Posesion', 'Cantidad de tiros al arco', 'Mes jugado'])
 # Doc: https://pandas.pydata.org/pandas-docs/stable/visualization.html#scatter-matrix-plot
 scatter_matrix(df, figsize=(10, 10), diagonal='hist', color=winnerFromTeamId)
 title = 'Equipo: ' + teamName + ' -- Temporada:' + season + ' -- Cantidad de partidos:' + str(numberOfMatches) + '\n' \
         ' Ganados: ' + str(matchResult[0])+' Enpatados: ' + str(matchResult[1])+' Perdidos: ' + str(matchResult[2])
 plt.suptitle(title)
-# plt.show()
+plt.show()
 
 
