@@ -1,7 +1,7 @@
 from myData import Data
 dataObject = Data()
-from myDecisionTree import myDecisionTree
-myDecisionTreeObject = myDecisionTree()
+from myClassifier import myClassifier
+myClassifier = myClassifier()
 from myPlot import myPlot
 myPlotObject = myPlot()
 
@@ -45,7 +45,7 @@ print (len(stage))
 months = dataObject.getMonth(matches)
 print "Meses"
 print (months)
-print (len(months))
+
 
 
 matchResultColor = dataObject.getMatchResultColor(matches, teamApiId)
@@ -55,16 +55,17 @@ print matchResultColor
 matchResultNumber = dataObject.getMatchResultNumber(matches, teamApiId)
 print "Resultado del partido",matchResultNumber
 
+feature_names = ['Stage', 'Cantidad de faltas', '% Posesion','Cantidad de tiros al arco','Mes jugado']
 X = np.column_stack((stage, numberOfFoulCommit, posPossesionAverage, numberOfShotOn, months))
-print "Vector X \n stage, Foul, Possesion, ShotOn, months \n",X
+print feature_names
+print X
 print X.shape
 Y = matchResultNumber
-feature_names = ['Stage', 'Cantidad de faltas', '% Posesion','Cantidad de tiros al arco','Mes jugado']
 class_names = ["Perdio" ,"Empato" , "Gano"]
 
 
-myDecisionTreeObject.classifie(X,Y, feature_names,class_names ,teamName)
-
+myClassifier.decisionTreeClassifier(X, Y, feature_names, class_names, teamName)
+myClassifier.SVMClassifier(X,Y, feature_names)
 
 numberOfWinTieLose = dataObject.getNumberOfWinTieLose(matches,teamApiId)
 win = str(numberOfWinTieLose[0])

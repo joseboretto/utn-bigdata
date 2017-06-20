@@ -353,7 +353,7 @@ class Data(object):
 
         for x in range(0, numberOfRows):
             date_string = dateMatrix['date'][x]  # formato devuelto 2008 - 08 - 17 00:00:00
-            print date_string
+            # print date_string
             datetime_object = pd.to_datetime(date_string)
             # convierto de string a date (revisar si '%m' es mes con numero, %b es mes con tres letras: JAN,FEB,...
 
@@ -364,7 +364,6 @@ class Data(object):
             result.append(mes)
 
         return result
-
 
     def getNumberOfWinTieLose(self, matches, homeTeamApiId):
         numberOfRows = len(matches['id'])
