@@ -8,6 +8,7 @@ connection = sqlite3.connect('input/database.sqlite')
 
 
 class Data(object):
+
     def getMatchesFromDataBase(self, teamApiId ,season):
         # obtenemos las filas que queremos del Leicester City
         sqlQuery = ' SELECT * FROM Match' \
@@ -244,7 +245,7 @@ class Data(object):
         #     </value>
         # </foulcommit>
 
-    def getWinnerFromTeamId(self, matches, homeTeamApiId):
+    def getMatchResultColor(self, matches, homeTeamApiId):
         numberOfRows = len(matches['id'])
         home_team_api_idMatrix = matches[['home_team_api_id']]
         home_team_goalMatrix = matches[['home_team_goal']]
@@ -257,7 +258,6 @@ class Data(object):
             if home_team_goalMatrix['home_team_goal'][x] == away_team_goalMatrix['away_team_goal'][x]:
                 result.append('b')
                 continue
-
             if home_team_goalMatrix['home_team_goal'][x] > away_team_goalMatrix['away_team_goal'][x]:
                 homeWon = True
             else:
@@ -273,22 +273,38 @@ class Data(object):
                 result.append('g')
             else:
                 result.append('r')
-
         return result
 
-    def countMatchResult(self,colourArray):
-        win = 0
-        tie = 0
-        lose =0
-        for colour in colourArray:
-            if (colour=='b'):
-                tie+=1
-            if (colour=='r'):
-                lose+=1
-            if (colour=='g'):
-                win+=1
+    def getMatchResultNumber(self, matches, homeTeamApiId):
+        numberOfRows = len(matches['id'])
+        home_team_api_idMatrix = matches[['home_team_api_id']]
+        home_team_goalMatrix = matches[['home_team_goal']]
+        away_team_goalMatrix = matches[['away_team_goal']]
 
-        return [win,tie,lose]
+        result = []
+        # recorremos todas las filas
+        for x in range(0, numberOfRows):
+            # como le fue al local?
+            if home_team_goalMatrix['home_team_goal'][x] == away_team_goalMatrix['away_team_goal'][x]:
+                result.append(0)
+                continue
+            if home_team_goalMatrix['home_team_goal'][x] > away_team_goalMatrix['away_team_goal'][x]:
+                homeWon = True
+            else:
+                homeWon = False
+            # como le fue al equipo que estoy analizando?
+            if home_team_api_idMatrix['home_team_api_id'][x] == homeTeamApiId:
+                homeWon
+            else:
+                homeWon = not homeWon
+
+            # elijo el color
+            if homeWon:
+                result.append(1)
+            else:
+                result.append(-1)
+        return result
+
     def getStage(self, matches):
         numberOfRows = len(matches['id'])
         stageMatrix = matches[['stage']]
@@ -300,7 +316,6 @@ class Data(object):
             result.append(stageNumber)
 
         return result
-
 
     def getNumberOfShotOn(self, matches, homeTeamApiId):
         result = []
@@ -324,24 +339,12 @@ class Data(object):
         return result
 
     def getTeamName(self,teamApiId):
-        sqlQuery = ' SELECT Team.team_long_name FROM Team WHERE team_api_id='+ str(teamApiId)
+        sqlQuery = ' SELECT team_long_name FROM Team WHERE team_api_id='+ str(teamApiId)
         print (sqlQuery)
-        queryResult = pd.read_sql_query(sqlQuery, connection)
-
+        queryResultDataFrame = pd.read_sql(sqlQuery, connection)
         # ejecutamos la consulta
-        return str(queryResult['team_long_name'].values)
-
-    def tranformColorsInNumber(self,colourArray):
-        result = []
-        for colour in colourArray:
-            if (colour == 'b'):
-                result.append(0)
-            if (colour == 'r'):
-                result.append(-1)
-            if (colour == 'g'):
-                result.append(1)
-
-        return result
+        unicodeString =queryResultDataFrame['team_long_name'].values[0]
+        return unicodeString.encode('ascii','ignore')
 
     def getMonth(self, matches):
         result = []
@@ -361,3 +364,37 @@ class Data(object):
             result.append(mes)
 
         return result
+
+
+    def getNumberOfWinTieLose(self, matches, homeTeamApiId):
+        numberOfRows = len(matches['id'])
+        home_team_api_idMatrix = matches[['home_team_api_id']]
+        home_team_goalMatrix = matches[['home_team_goal']]
+        away_team_goalMatrix = matches[['away_team_goal']]
+
+        win = 0
+        tie = 0
+        lose = 0
+        # recorremos todas las filas
+        for x in range(0, numberOfRows):
+            # como le fue al local?
+            if home_team_goalMatrix['home_team_goal'][x] == away_team_goalMatrix['away_team_goal'][x]:
+                tie += 1
+                continue
+            if home_team_goalMatrix['home_team_goal'][x] > away_team_goalMatrix['away_team_goal'][x]:
+                homeWon = True
+            else:
+                homeWon = False
+            # como le fue al equipo que estoy analizando?
+            if home_team_api_idMatrix['home_team_api_id'][x] == homeTeamApiId:
+                homeWon
+            else:
+                homeWon = not homeWon
+
+            # elijo el color
+            if homeWon:
+                win += 1
+            else:
+                lose +=1
+
+        return [win,tie,lose]
