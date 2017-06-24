@@ -1,3 +1,4 @@
+#%%
 import sqlite3
 import xml.etree.ElementTree as ET
 import pandas as pd
@@ -5,7 +6,7 @@ from datetime import datetime
 
 # creamos una carpeta input dentro del proyecto y copiamos la base de datos
 connection = sqlite3.connect('input/database.sqlite')
-
+#%%
 
 class Data(object):
 
@@ -114,7 +115,7 @@ class Data(object):
             # 'possession',
         ]]
         return matches_features
-
+#%%
     def getPossesionAverage(self, matches, homeTeamApiId):
         # Datta escondida en los XML
         # https://www.kaggle.com/njitram/exploring-the-incident-data
@@ -199,25 +200,47 @@ class Data(object):
         #    </value>
         # </possession>
 
-    def getNumberOfFoulCommit(self, matches, homeTeamApiId):
+
+#%%
+    def getNumberOfCards(self, matches, teamApiId, color):
+        result = []
+        numberOfRows = len(matches['card'])
+        cardsMatrix = matches[['card']]
+        for x in range(0, numberOfRows):
+            cardsXMLstring = cardsMatrix['card'][x]
+            root = ET.fromstring(cardsXMLstring)
+            numberOfCards = 0
+            for value in root:
+                teamXML = value.find('./team')
+                colorCard = value.find('./comment')
+                if teamXML is not None and (colorCard == color):
+                    if (int(teamXML.text) == teamApiId):
+                        numberOfCards += 1
+            result.append(numberOfCards)
+        return result
+    
+    
+#%%
+    
+    def getNumberOfFoulCommit(self, matches, teamApiId):
         # Datta escondida en los XML
         # https://www.kaggle.com/njitram/exploring-the-incident-data
         result = []
         numberOfRows = len(matches['foulcommit'])
         possesionMatrix = matches[['foulcommit']]
-        homeTeamApiIdMatrix = matches[['home_team_api_id']]
+        #homeTeamApiIdMatrix = matches[['home_team_api_id']]
         # recorremos todas las filas
         for x in range(0, numberOfRows):
             # print ('match id ' + str(matches['id'][x]))
             possesionXMLstring = possesionMatrix['foulcommit'][x]
             root = ET.fromstring(possesionXMLstring)
             numberOfFoulCommit = 0  # la posesion es complementaria, tomamos solo una
-            numberOfValues = len(root._children)
+            #numberOfValues = len(root._children)
             # recorremos todas el xml
             for value in root:
                 teamXml = value.find('./team')
                 if teamXml is not None:
-                    if (int(teamXml.text) == homeTeamApiId):
+                    if (int(teamXml.text) == teamApiId):
                         numberOfFoulCommit += 1
 
             # print numberOfFoulCommit
@@ -244,7 +267,7 @@ class Data(object):
         #         <id>3645732</id>
         #     </value>
         # </foulcommit>
-
+#%%
     def getMatchResultColor(self, matches, homeTeamApiId):
         numberOfRows = len(matches['id'])
         home_team_api_idMatrix = matches[['home_team_api_id']]
@@ -304,7 +327,7 @@ class Data(object):
             else:
                 result.append(-1)
         return result
-
+#%%
     def getStage(self, matches):
         numberOfRows = len(matches['id'])
         stageMatrix = matches[['stage']]
@@ -316,18 +339,18 @@ class Data(object):
             result.append(stageNumber)
 
         return result
-
+#%%
     def getNumberOfShotOn(self, matches, homeTeamApiId):
         result = []
         numberOfRows = len(matches['shoton'])
         shotOnMatrix = matches[['shoton']]
-        homeTeamApiIdMatrix = matches[['home_team_api_id']]
+        #homeTeamApiIdMatrix = matches[['home_team_api_id']]
         # recorro las filas
         for x in range(0, numberOfRows):
             shotonXMLstring = shotOnMatrix['shoton'][x]
             root = ET.fromstring(shotonXMLstring)
             numberOfShotOn = 0
-            nomberOfValues = len(root._children)
+            #numberOfValues = len(root._children)
             # recorro el xml de la columna
             for value in root:
                 teamXml = value.find('./team')
@@ -337,7 +360,7 @@ class Data(object):
             result.append(numberOfShotOn)
 
         return result
-
+#%%
     def getTeamName(self,teamApiId):
         sqlQuery = ' SELECT team_long_name FROM Team WHERE team_api_id='+ str(teamApiId)
         print (sqlQuery)
@@ -345,7 +368,7 @@ class Data(object):
         # ejecutamos la consulta
         unicodeString =queryResultDataFrame['team_long_name'].values[0]
         return unicodeString.encode('ascii','ignore')
-
+#%%
     def getMonth(self, matches):
         result = []
         numberOfRows = len(matches['id'])
@@ -364,7 +387,7 @@ class Data(object):
             result.append(mes)
 
         return result
-
+#%%
     def getNumberOfWinTieLose(self, matches, homeTeamApiId):
         numberOfRows = len(matches['id'])
         home_team_api_idMatrix = matches[['home_team_api_id']]
@@ -397,3 +420,39 @@ class Data(object):
                 lose +=1
 
         return [win,tie,lose]
+#%%
+    def getNumberOfCorner(self, matches, teamApiId):
+        result = []
+        numberOfRows = len(matches['corner'])
+        cornersMatrix = matches[['corner']]
+        #homeTeamApiIdMatrix = matches[['home_team_api_id']]
+        for x in range(0, numberOfRows):
+            cornerXMLstring = cornersMatrix['corner'][x]
+            root = ET.fromstring(cornerXMLstring)
+            numberOfCorners = 0
+            #numberOfValues = len(root._children)
+            for value in root:
+                teamXML = value.find('./team')
+                if teamXML is not None:
+                    if (int(teamXML.text) == teamApiId):
+                        numberOfCorners +=1
+            result.append(numberOfCorners)
+        return result
+    
+    #%%
+    def getNumberOfCross(self, matches, teamApiId):
+        result = []
+        numberOfRows = len(matches['cross'])
+        crossesMatrix = matches[['cross']]
+        for x in range(0, numberOfRows):
+            crossXMLstring = crossesMatrix['cross'][x]
+            root = ET.fromstring(crossXMLstring)
+            numberOfCrosses = 0
+            for value in root:
+                teamXML = value.find('./team')
+                if teamXML is not None:
+                    if(int(teamXML.text) == teamApiId):
+                        numberOfCrosses +=1
+            result.append(numberOfCrosses)
+        return result
+    #%%
