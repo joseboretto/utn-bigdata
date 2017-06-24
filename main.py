@@ -1,8 +1,8 @@
 #%%
 from myData import Data
 dataObject = Data()
-#from myClassifier import myClassifier
-#myClassifier = myClassifier()
+from myClassifier import myClassifier
+myClassifier = myClassifier()
 from myPlot import myPlot
 myPlotObject = myPlot()
 
@@ -46,15 +46,7 @@ print (len(stage))
 months = dataObject.getMonth(matches)
 print "Meses"
 print (months)
-#%%
-#cardsY = dataObject.getNumberOfCardsY(matches, teamApiId)
-#print "Tarjetas Amarillas"
-#print (cardsY)
 
-#cardsR = dataObject.getNumberOfCardsR(matches, teamApiId)
-#print "Tarjetas Rojas"
-#print (cardsR)
-#%%
 yellowCards = dataObject.getNumberOfCards(matches, teamApiId, 'y')
 print "Tarjetas Amarillas"
 print (yellowCards)
@@ -80,7 +72,7 @@ print "Resultado del partido",matchResultNumber
 
 
 
-feature_names = ['Stage', 'Cantidad de faltas', '% Posesion','Cantidad de tiros al arco','Mes jugado','Corners', 'Tarjetas Amarillas', 'Tarjetas Rojas', 'Cruces efectuados']
+feature_names = ['Stage', 'Foules', '% Posesion','Tiros al arco','Mes','Corners', 'Amarillas', 'Rojas', 'Cruces']
 X = np.column_stack((stage, numberOfFoulCommit, posPossesionAverage, numberOfShotOn, months, corners, yellowCards, redCards, crosses))
 print feature_names
 print X
@@ -89,8 +81,8 @@ Y = matchResultNumber
 class_names = ["Perdio" ,"Empato" , "Gano"]
 
 
-#myClassifier.decisionTreeClassifier(X, Y, feature_names, class_names, teamName)
-#myClassifier.SVMClassifier(X,Y, feature_names)
+myClassifier.decisionTreeClassifier(X, Y, feature_names, class_names, teamName)
+myClassifier.SVMClassifier(X,Y, feature_names)
 
 numberOfWinTieLose = dataObject.getNumberOfWinTieLose(matches,teamApiId)
 win = str(numberOfWinTieLose[0])

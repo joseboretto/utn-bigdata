@@ -201,7 +201,7 @@ class Data(object):
         # </possession>
 
 
-#%%
+# %%
     def getNumberOfCards(self, matches, teamApiId, color):
         result = []
         numberOfRows = len(matches['card'])
@@ -212,15 +212,15 @@ class Data(object):
             numberOfCards = 0
             for value in root:
                 teamXML = value.find('./team')
-                colorCard = value.find('./comment')
-                if teamXML is not None and (colorCard == color):
-                    if (int(teamXML.text) == teamApiId):
+                colorCard = value.find('./card_type')
+                if teamXML is not None and colorCard is not None:
+                    if (int(teamXML.text) == teamApiId) and (colorCard.text == color):
                         numberOfCards += 1
             result.append(numberOfCards)
         return result
     
     
-#%%
+# %%
     
     def getNumberOfFoulCommit(self, matches, teamApiId):
         # Datta escondida en los XML

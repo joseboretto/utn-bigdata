@@ -6,6 +6,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 class myPlot(object):
     def plot(self, X,columns, color , title, fileName ):
+        print "Guardando PDF..."
         df = pd.DataFrame(X, columns=columns)
         # Doc: https://pandas.pydata.org/pandas-docs/stable/visualization.html#scatter-matrix-plot
         scatter_matrix(df, figsize=(10, 10), diagonal='hist', color=color)
