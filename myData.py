@@ -15,8 +15,10 @@ class Data(object):
         sqlQuery = ' SELECT * FROM Match' \
                    ' WHERE' \
                    '( home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) + ' )'+ \
-                   ' AND season IN ' + season + \
+                   ' AND season IN ' + str(season) + \
                    ' ORDER BY season, stage'
+
+
         print (sqlQuery)
         # ejecutamos la consulta
         return pd.read_sql_query(sqlQuery, connection)

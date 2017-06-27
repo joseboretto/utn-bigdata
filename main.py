@@ -12,7 +12,7 @@ import numpy as np
 seasonA = ' \'2013/2014\' '
 seasonB = ' \'2014/2015\' '
 seasonC = ' \'2015/2016\' '
-season = (seasonA, seasonB, seasonC)
+season = '('+seasonA +','+ seasonB +','+ seasonC+')'
 
 LeicesterCity = 8197
 ManchesterCity = 8456
