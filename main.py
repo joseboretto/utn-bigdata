@@ -1,8 +1,3 @@
-from pandas.plotting import scatter_matrix
-import pandas as pd
-import matplotlib.pyplot as plt
-from plotly.offline.offline import matplotlib
-
 #%%
 from myData import Data
 dataObject = Data()
@@ -10,13 +5,15 @@ from myClassifier import myClassifier
 myClassifier = myClassifier()
 from myPlot import myPlot
 myPlotObject = myPlot()
-
-
-
-
 import numpy as np
 # https://www.premierleague.com/clubs/12/club/stats?se=42
-season = ' \'2015/2016\' '
+# AND season IN ('2013/2014', '2014/2015', '2015/2016')
+
+seasonA = ' \'2013/2014\' '
+seasonB = ' \'2014/2015\' '
+seasonC = ' \'2015/2016\' '
+season = (seasonA, seasonB, seasonC)
+
 LeicesterCity = 8197
 ManchesterCity = 8456
 Barcelona = 8634
@@ -44,6 +41,15 @@ numberOfShotOn = dataObject.getNumberOfShotOn(matches, teamApiId)
 print "Cantidad de tiros al arco"
 print (numberOfShotOn)
 print (len(numberOfShotOn))
+
+stage = dataObject.getStage(matches)
+print "Stage o Fecha del torneo"
+print (stage)
+print (len(stage))
+
+months = dataObject.getMonth(matches)
+print "Meses"
+print (months)
 
 yellowCards = dataObject.getNumberOfCards(matches, teamApiId, 'y')
 print "Tarjetas Amarillas"
@@ -91,13 +97,6 @@ tie = str(numberOfWinTieLose[1])
 lose = str(numberOfWinTieLose[2])
 title = 'Equipo: ' + teamName + ' -- Temporada:' + season + ' -- Cantidad de partidos:' + str(numberOfMatches) \
         + '\n  Ganados: ' + win + ' Enpatados: ' + tie + ' Perdidos: ' + lose
-
-
-df = pd.DataFrame(X, columns=feature_names)
-# Doc: https://pandas.pydata.org/pandas-docs/stable/visualization.html#scatter-matrix-plot
-scatter_matrix(df, figsize=(10, 10), diagonal='hist', color=matchResultColor)
-plt.suptitle(title)
-# plt.show()
 myPlotObject.plot(X, feature_names, matchResultColor, title, teamName)
 #%%
 
