@@ -15,8 +15,8 @@ class Data(object):
         sqlQuery = ' SELECT * FROM Match' \
                    ' WHERE' \
                    '( home_team_api_id = ' + str(teamApiId) + ' OR away_team_api_id = ' + str(teamApiId) + ' )'+ \
-                   ' AND season = ' + season + \
-                   ' ORDER BY stage'
+                   ' AND season IN ' + season + \
+                   ' ORDER BY season, stage'
         print (sqlQuery)
         # ejecutamos la consulta
         return pd.read_sql_query(sqlQuery, connection)
@@ -124,27 +124,32 @@ class Data(object):
         possesionMatrix = matches[['possession']]
         homeTeamApiIdMatrix = matches[['home_team_api_id']]
 
-        # recorremos todas las filas
+        # RECORREMOS TODAS LAS FILAS
         for x in range(0, numberOfRows):
             possesionXMLstring = possesionMatrix['possession'][x]
             root = ET.fromstring(possesionXMLstring)
             homeposAverage = 0  # la posesion es complementaria, tomamos solo una
             numberOfValues = len(root._children)
-            # recorremos todas el xml
+            if numberOfValues == 0: # xml vacio!! agregar un result.append(-1) y un else todo lo otro
+                homeposAverage = -1 # seteo de entrada a -1 para despues agregarlo
+            # RECORREMOS EL XML POSSESSION
             for value in root:
-                homeposValue =value.find('./homepos')
+                homeposValue = value.find('./homepos')
                 if homeposValue is not None:
                     homeposAverage += int(homeposValue.text)
-
-            # calculamos el promedio
-            homeposAverage = homeposAverage / numberOfValues
-            # necesitamos saber de que equipo es la possesion
-            # el resultado es una matrix de 2xn , el primero siempre es el home.
-            if homeTeamApiId == homeTeamApiIdMatrix['home_team_api_id'][x]:
+                #else: no me hace falta preguntar por el ELSE, queda en -1
+            #-------
+            # CALCULAMOS EL PROMEDIO
+            # me aseguro que no sea -1 antes de calcular el AVG,
+            # ni que el divisior sea 0 asi no tira error
+            if (homeposAverage > 0 and numberOfValues > 0):
+                homeposAverage = homeposAverage / numberOfValues
+                if homeTeamApiId == homeTeamApiIdMatrix['home_team_api_id'][x]: # necesitamos saber de que equipo es la possesion # el resultado es una matrix de 2xn , el primero siempre es el home.
+                    result.append(homeposAverage)
+                else:
+                    result.append(100 - homeposAverage)
+            else: #si no entra al IF anterior, homeposAverage sigue siendo -1 y se agrega como tal al vector
                 result.append(homeposAverage)
-            else:
-                result.append(100 - homeposAverage)
-
         return result
 
 

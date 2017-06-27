@@ -5,11 +5,15 @@ from myClassifier import myClassifier
 myClassifier = myClassifier()
 from myPlot import myPlot
 myPlotObject = myPlot()
-
-
 import numpy as np
 # https://www.premierleague.com/clubs/12/club/stats?se=42
-season = ' \'2015/2016\' '
+# AND season IN ('2013/2014', '2014/2015', '2015/2016')
+
+seasonA = ' \'2013/2014\' '
+seasonB = ' \'2014/2015\' '
+seasonC = ' \'2015/2016\' '
+season = (seasonA, seasonB, seasonC)
+
 LeicesterCity = 8197
 ManchesterCity = 8456
 Barcelona = 8634
