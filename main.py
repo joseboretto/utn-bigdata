@@ -1,3 +1,8 @@
+from pandas.plotting import scatter_matrix
+import pandas as pd
+import matplotlib.pyplot as plt
+from plotly.offline.offline import matplotlib
+
 #%%
 from myData import Data
 dataObject = Data()
@@ -7,16 +12,18 @@ from myPlot import myPlot
 myPlotObject = myPlot()
 
 
+
+
 import numpy as np
 # https://www.premierleague.com/clubs/12/club/stats?se=42
 season = ' \'2015/2016\' '
 LeicesterCity = 8197
 ManchesterCity = 8456
 Barcelona = 8634
-Arsenal = 9825
+Arsenal = 9825 # Ganados: 20 Enpatados: 11 Perdidos: 7
 Chelsea = 8455 # tiene las clases mas balanceadas 12,14,12
 
-teamApiId = Chelsea
+teamApiId = Arsenal
 
 teamName = dataObject.getTeamName(teamApiId)
 matches = dataObject.getMatchesFromDataBase(teamApiId , season)
@@ -37,15 +44,6 @@ numberOfShotOn = dataObject.getNumberOfShotOn(matches, teamApiId)
 print "Cantidad de tiros al arco"
 print (numberOfShotOn)
 print (len(numberOfShotOn))
-
-stage = dataObject.getStage(matches)
-print "Stage o Fecha del torneo"
-print (stage)
-print (len(stage))
-
-months = dataObject.getMonth(matches)
-print "Meses"
-print (months)
 
 yellowCards = dataObject.getNumberOfCards(matches, teamApiId, 'y')
 print "Tarjetas Amarillas"
@@ -72,17 +70,20 @@ print "Resultado del partido",matchResultNumber
 
 
 
-feature_names = ['Stage', 'Foules', '% Posesion','Tiros al arco','Mes','Corners', 'Amarillas', 'Rojas', 'Cruces']
-X = np.column_stack((stage, numberOfFoulCommit, posPossesionAverage, numberOfShotOn, months, corners, yellowCards, redCards, crosses))
+feature_names = ['Corners','Foules', 'Tiros al arco']
+X = np.column_stack((crosses,numberOfFoulCommit, numberOfShotOn))
 print feature_names
 print X
 print X.shape
 Y = matchResultNumber
 class_names = ["Perdio" ,"Empato" , "Gano"]
 
-
 myClassifier.decisionTreeClassifier(X, Y, feature_names, class_names, teamName)
-myClassifier.SVMClassifier(X,Y, feature_names)
+
+myClassifier.decisionTreeClassifierDesicionBoundary(X, Y, feature_names, class_names, teamName)
+
+# myClassifier.decisionTreeClassifier(X, Y, feature_names, class_names, teamName)
+
 
 numberOfWinTieLose = dataObject.getNumberOfWinTieLose(matches,teamApiId)
 win = str(numberOfWinTieLose[0])
@@ -90,6 +91,13 @@ tie = str(numberOfWinTieLose[1])
 lose = str(numberOfWinTieLose[2])
 title = 'Equipo: ' + teamName + ' -- Temporada:' + season + ' -- Cantidad de partidos:' + str(numberOfMatches) \
         + '\n  Ganados: ' + win + ' Enpatados: ' + tie + ' Perdidos: ' + lose
+
+
+df = pd.DataFrame(X, columns=feature_names)
+# Doc: https://pandas.pydata.org/pandas-docs/stable/visualization.html#scatter-matrix-plot
+scatter_matrix(df, figsize=(10, 10), diagonal='hist', color=matchResultColor)
+plt.suptitle(title)
+# plt.show()
 myPlotObject.plot(X, feature_names, matchResultColor, title, teamName)
 #%%
 

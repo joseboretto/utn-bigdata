@@ -23,19 +23,60 @@ class myClassifier(object):
         graph.write_pdf(fileName + '- Arbol.pdf')
         Image(graph.create_png())
 
-    def SVMClassifier(self, X, Y,feature_names):
 
-        clf = svm.SVC(kernel='linear', C = 1.0)
-        # entrenamos el clasificador
-        clf.fit(X, Y)
-        # Obtenemos los pesos
-        # Obtenemos los pesos
-        w = clf.coef_
-        print 'Pesos: [W]: ', w
-        # self.plot_coefficients(clf,feature_names)
-        # Plot Decision Region using mlxtend's awesome plotting function
-        # Y = np.array(Y)
-        # plot_decision_regions(X=X,y=Y,clf=clf,legend=5)
+    def decisionTreeClassifierDesicionBoundary(self, X, Y, feature_names, target_names,fileName):
+        # Parameters
+        n_classes = 3
+        plot_colors = "bry"
+        plot_step = 1
+        for pairidx, pair in enumerate([[0, 1], [0, 2], [1, 2]]):
+
+            print "pair",pair
+            print "paidx",pairidx
+            print "feature 1 , eje X", feature_names[pair[0]]
+            print "feature 2 , eje Y", feature_names[pair[1]]
+
+            # We only take the two corresponding features
+            X_2features = X[:, pair]
+
+
+            # Train
+            clf = tree.DecisionTreeClassifier().fit(X_2features, Y)
+
+            # Plot the decision boundary
+            plt.subplot(1, 3, pairidx + 1)
+
+            x_min, x_max = 0, 30
+            y_min, y_max = 0 ,30
+            xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
+                                 np.arange(y_min, y_max, plot_step))
+
+            Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+            Z = Z.reshape(xx.shape)
+            cs = plt.contourf(xx, yy, Z, cmap=plt.cm.Paired)
+
+            plt.xlabel(feature_names[pair[0]])
+            plt.ylabel(feature_names[pair[1]])
+            plt.axis("tight")
+            # plt.show()
+
+            # Plot the training points
+            for i, color in zip(range(n_classes), plot_colors):
+                idx = np.where(Y == i)
+                plt.scatter(X[idx, 0], X[idx, 1], c=color, label=target_names[i],
+                            cmap=plt.cm.Paired)
+
+            plt.axis("tight")
+            # plt.show()
+
+        plt.suptitle("Equipo " + fileName)
+        plt.legend()
+        plt.show()
+
+
+
+
+
 
 
 
