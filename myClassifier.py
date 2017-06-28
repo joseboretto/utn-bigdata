@@ -1,12 +1,10 @@
-from sklearn import tree, clone
-from IPython.display import Image
-import pydotplus
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import style
-style.use("ggplot")
-from sklearn import svm
-from mlxtend.plotting import plot_decision_regions
+import numpy as np
+import pydotplus
+from IPython.display import Image
+from sklearn import tree
+from matplotlib.backends.backend_pdf import PdfPages
+
 
 # http://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html
 class myClassifier(object):
@@ -23,10 +21,10 @@ class myClassifier(object):
         graph = pydotplus.graph_from_dot_data(dot_data)
 
         graph.write_pdf(fileName + '- Arbol.pdf')
-        Image(graph.create_png())
 
 
-    def decisionTreeClassifierDesicionBoundary(self, X, Y, feature_names, target_names,fileName):
+
+    def decisionTreeClassifierDesicionBoundaryCurve(self, X, Y, feature_names, target_names, fileName, title):
         # http://scikit-learn.org/stable/auto_examples/tree/plot_iris.html
         # Parameters
         n_classes = 3
@@ -34,10 +32,7 @@ class myClassifier(object):
         plot_step = 1
         for pairidx, pair in enumerate([[0, 1], [0, 2], [1, 2]]):
 
-            print "pair",pair
-            print "paidx",pairidx
-            print "feature 1 , eje X", feature_names[pair[0]]
-            print "feature 2 , eje Y", feature_names[pair[1]]
+
 
             # We only take the two corresponding features
             X_2features = X[:, pair]
@@ -48,6 +43,7 @@ class myClassifier(object):
 
 
             # Plot the decision boundary
+            # plt.subplot(nrows=1, ncols=3, posicion)
             plt.subplot(1, 3, pairidx + 1)
 
             x_min, x_max = 0, 30
@@ -73,14 +69,23 @@ class myClassifier(object):
             plt.axis("tight")
             # plt.show()
 
-        plt.suptitle("Equipo " + fileName)
+        plt.suptitle(title)
         plt.legend()
+        print ('Generando PDF')
+        pp = PdfPages(fileName + '- DesicionBoundary - Curve.pdf')
+        plt.savefig(pp, format='pdf')
+        pp.close()
+
+        # maximizo el tamano
+        mng = plt.get_current_fig_manager()
+        mng.resize(*mng.window.maxsize())
         plt.show()
 
 
 
-    def decisionTreeClassifierDesicionBoundary2(self, X, Y, feature_names, target_names, fileName):
-
+    def decisionTreeClassifierDesicionBoundaryStraigh(self, X, Y, feature_names, target_names, fileName, title):
+        # guardo pdf
+        fig = plt.figure()
         # http://scikit-learn.org/stable/auto_examples/ensemble/plot_forest_iris.html
         # Parameters
         n_classes = 3
@@ -116,14 +121,11 @@ class myClassifier(object):
             scores = clf.score(X_2Features, y)
             # Create a title for each column and the console by using str() and
             # slicing away useless parts of the string
-            model_title = "DecisionTreeClassifier"
-            model_details = model_title
-            if hasattr(tree.DecisionTreeClassifier(max_depth=None), "estimators_"):
-                model_details += " with {} estimators".format(len(model.estimators_))
-            print(model_details + " with features", pair, "has a score of", scores)
+            plt.xlabel(feature_names[pair[0]])
+            plt.ylabel(feature_names[pair[1]])
 
             plt.subplot(1, 3, plot_idx)
-            plt.title(model_title)
+
 
             # Now plot the decision boundary using a fine mesh as input to a
             # filled contour plot
@@ -157,9 +159,17 @@ class myClassifier(object):
 
             plot_idx += 1  # move on to the next plot in sequence
 
-        plt.suptitle("Classifiers on feature subsets of the Iris dataset")
+        plt.suptitle(title)
         plt.axis("tight")
 
+        print ('Generando PDF')
+        pp = PdfPages(fileName + '- DesicionBoundary - straigh.pdf')
+        plt.savefig(pp, format='pdf')
+        pp.close()
+
+        # maximizo el tamano
+        mng = plt.get_current_fig_manager()
+        mng.resize(*mng.window.maxsize())
         plt.show()
 
 
