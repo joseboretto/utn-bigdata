@@ -286,7 +286,7 @@ class Data(object):
         for x in range(0, numberOfRows):
             # como le fue al local?
             if home_team_goalMatrix['home_team_goal'][x] == away_team_goalMatrix['away_team_goal'][x]:
-                result.append('b')
+                result.append('y')
                 continue
             if home_team_goalMatrix['home_team_goal'][x] > away_team_goalMatrix['away_team_goal'][x]:
                 homeWon = True
@@ -300,7 +300,7 @@ class Data(object):
 
             # elijo el color
             if homeWon:
-                result.append('g')
+                result.append('b')
             else:
                 result.append('r')
         return result

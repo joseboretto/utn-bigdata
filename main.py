@@ -78,15 +78,21 @@ title = 'Equipo: ' + teamName + ' -- Temporada:' + season + ' -- Cantidad de par
 #GRAFICO TODOS LOS PARTIDOS EN DISTINTOS EJES
 myPlotObject.plot(X, feature_names, matchResultColor, title, teamName)
 
-#GRAFICO LIMITES DE DESICION DE FORMA CURVA
-myClassifier.decisionTreeClassifierDesicionBoundaryCurve(X, Y, feature_names, target_names, teamName,title)
-myClassifier.decisionTreeClassifierDesicionBoundaryCurveStep2(X, Y, feature_names, target_names, teamName,title)
 
 # GRAFICO LIMITES DE DESICION DE FORMA RECTA
-myClassifier.decisionTreeClassifierDesicionBoundaryStraigh(X, Y, feature_names, target_names, teamName,title)
+myClassifier.decisionTreeClassifierDesicionBoundaryStraigh(X, Y, feature_names, target_names, teamName,title,matchResultColor)
+
+myClassifier.decisionTreeClassifierDesicionBoundaryStraighDepth(X, Y, feature_names, target_names, teamName,title,matchResultColor,1)
+myClassifier.decisionTreeClassifierDesicionBoundaryStraighDepth(X, Y, feature_names, target_names, teamName,title,matchResultColor,2)
+myClassifier.decisionTreeClassifierDesicionBoundaryStraighDepth(X, Y, feature_names, target_names, teamName,title,matchResultColor,5)
+
+myClassifier.decisionTreeClassifierDesicionBoundaryStraighMinLeaf(X, Y, feature_names, target_names, teamName,title,matchResultColor,1)
+myClassifier.decisionTreeClassifierDesicionBoundaryStraighMinLeaf(X, Y, feature_names, target_names, teamName,title,matchResultColor,2)
+myClassifier.decisionTreeClassifierDesicionBoundaryStraighMinLeaf(X, Y, feature_names, target_names, teamName,title,matchResultColor,5)
 
 # GRAFICO LIMITES DE DESICION ARBOL DE DESICION
 myClassifier.decisionTreeClassifier(X, Y, feature_names, target_names, teamName)
+myClassifier.decisionTreeClassifierMaxDepth(X, Y, feature_names, target_names, teamName,5)
 
 
 
