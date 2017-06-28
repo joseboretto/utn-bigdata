@@ -31,7 +31,7 @@ seasonB = ' \'2014/2015\' '
 seasonC = ' \'2015/2016\' '
 #SELECIONO PARAMETROS
 season = '('+seasonA +','+ seasonB +','+ seasonC+')'
-teamApiId = BayerMunich
+teamApiId = Chelsea
 
 #CONSULTAS SQL
 print ('#CONSULTAS SQL')
@@ -80,11 +80,12 @@ myPlotObject.plot(X, feature_names, matchResultColor, title, teamName)
 
 #GRAFICO LIMITES DE DESICION DE FORMA CURVA
 myClassifier.decisionTreeClassifierDesicionBoundaryCurve(X, Y, feature_names, target_names, teamName,title)
+myClassifier.decisionTreeClassifierDesicionBoundaryCurveStep2(X, Y, feature_names, target_names, teamName,title)
 
-#GRAFICO LIMITES DE DESICION DE FORMA RECTA
+# GRAFICO LIMITES DE DESICION DE FORMA RECTA
 myClassifier.decisionTreeClassifierDesicionBoundaryStraigh(X, Y, feature_names, target_names, teamName,title)
 
-#GRAFICO LIMITES DE DESICION ARBOL DE DESICION
+# GRAFICO LIMITES DE DESICION ARBOL DE DESICION
 myClassifier.decisionTreeClassifier(X, Y, feature_names, target_names, teamName)
 
 

@@ -10,7 +10,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 class myClassifier(object):
     def decisionTreeClassifier(self, X, Y, feature_names, target_names, fileName):
         # http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
-
         clf = tree.DecisionTreeClassifier()
         clf = clf.fit(X, Y)
         dot_data = tree.export_graphviz(clf, out_file=None,
@@ -19,7 +18,6 @@ class myClassifier(object):
                                         filled=True, rounded=True,
                                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data)
-
         graph.write_pdf(fileName + '- Arbol.pdf')
 
 
@@ -30,24 +28,26 @@ class myClassifier(object):
         n_classes = 3
         plot_colors = "bry"
         plot_step = 1
-        for pairidx, pair in enumerate([[0, 1], [0, 2], [1, 2]]):
-
-
+        cant_tagert= len(target_names)
+        plt.figure(figsize=(10, 10), dpi=80)
+        for pairidx, pair in enumerate([[0, 0], [1, 0], [2, 0],
+                                        [0, 1], [1, 1], [2, 1],
+                                        [0, 2], [1, 2], [2, 2]]):
 
             # We only take the two corresponding features
             X_2features = X[:, pair]
-
-
             # Train
             clf = tree.DecisionTreeClassifier().fit(X_2features, Y)
-
-
+            # ['Corners','Foules', 'Tiros al arco']
             # Plot the decision boundary
             # plt.subplot(nrows=1, ncols=3, posicion)
-            plt.subplot(1, 3, pairidx + 1)
+            # tengo nrows por ncols cuadrados
 
-            x_min, x_max = 0, 30
-            y_min, y_max = 0 ,30
+
+            plt.subplot(cant_tagert, cant_tagert, (pairidx+1))
+
+            x_min, x_max = X_2features[:, 0].min() - 1, X_2features[:, 0].max() + 1
+            y_min, y_max = X_2features[:, 1].min() - 1, X_2features[:, 1].max() + 1
             xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
                                  np.arange(y_min, y_max, plot_step))
 
@@ -71,7 +71,7 @@ class myClassifier(object):
 
         plt.suptitle(title)
         plt.legend()
-        print ('Generando PDF')
+        print ('Generando PDF DesicionBoundary - Curve')
         pp = PdfPages(fileName + '- DesicionBoundary - Curve.pdf')
         plt.savefig(pp, format='pdf')
         pp.close()
@@ -81,7 +81,65 @@ class myClassifier(object):
         mng.resize(*mng.window.maxsize())
         plt.show()
 
+    def decisionTreeClassifierDesicionBoundaryCurveStep2(self, X, Y, feature_names, target_names, fileName, title):
+        # http://scikit-learn.org/stable/auto_examples/tree/plot_iris.html
+        # Parameters
+        n_classes = 3
+        plot_colors = "bry"
+        plot_step = 2
+        cant_tagert= len(target_names)
+        plt.figure(figsize=(10, 10))
+        for pairidx, pair in enumerate([[0, 0], [1, 0], [2, 0],
+                                        [0, 1], [1, 1], [2, 1],
+                                        [0, 2], [1, 2], [2, 2]]):
 
+            # We only take the two corresponding features
+            X_2features = X[:, pair]
+            # Train
+            clf = tree.DecisionTreeClassifier().fit(X_2features, Y)
+            # ['Corners','Foules', 'Tiros al arco']
+            # Plot the decision boundary
+            # plt.subplot(nrows=1, ncols=3, posicion)
+            # tengo nrows por ncols cuadrados
+
+
+            plt.subplot(cant_tagert, cant_tagert, (pairidx+1))
+
+            x_min, x_max = X_2features[:, 0].min() - 1, X_2features[:, 0].max() + 1
+            y_min, y_max = X_2features[:, 1].min() - 1, X_2features[:, 1].max() + 1
+            xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
+                                 np.arange(y_min, y_max, plot_step))
+
+            Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+            Z = Z.reshape(xx.shape)
+            cs = plt.contourf(xx, yy, Z, cmap=plt.cm.Paired)
+
+            plt.xlabel(feature_names[pair[0]])
+            plt.ylabel(feature_names[pair[1]])
+            plt.axis("tight")
+
+
+            # Plot the training points
+            for i, color in zip(range(n_classes), plot_colors):
+                idx = np.where(Y == i)
+                plt.scatter(X[idx, 0], X[idx, 1], c=color, label=target_names[i],
+                            cmap=plt.cm.Paired)
+
+            plt.axis("tight")
+
+
+
+        plt.suptitle(title)
+        plt.legend()
+        print ('Generando PDF DesicionBoundary - Curve - Step 2')
+        pp = PdfPages(fileName + '- DesicionBoundary - Curve - Step 2.pdf')
+        plt.savefig(pp, format='pdf')
+        pp.close()
+
+        # maximizo el tamano
+        mng = plt.get_current_fig_manager()
+        mng.resize(*mng.window.maxsize())
+        plt.show()
 
     def decisionTreeClassifierDesicionBoundaryStraigh(self, X, Y, feature_names, target_names, fileName, title):
         # guardo pdf
@@ -91,13 +149,16 @@ class myClassifier(object):
         n_classes = 3
         plot_colors = "ryb"
         cmap = plt.cm.RdYlBu
-        plot_step = 0.02  # fine step width for decision surface contours
+        plot_step = 1  # fine step width for decision surface contours
         plot_step_coarser = 0.5  # step widths for coarse classifier guesses
         RANDOM_SEED = 1  # fix the seed on each iteration
         plot_idx = 1
 
-        for pairidx, pair in enumerate([[0, 1], [0, 2], [1, 2]]):
-
+        cant_tagert = len(target_names)
+        plt.figure(figsize=(10, 10))
+        for pairidx, pair in enumerate([[0, 0], [1, 0], [2, 0],
+                                        [0, 1], [1, 1], [2, 1],
+                                        [0, 2], [1, 2], [2, 2]]):
 
             # We only take the two corresponding features
             X_2Features = X[:, pair]
@@ -111,9 +172,9 @@ class myClassifier(object):
             # y = y[idx]
 
             # Standardize
-            mean = X_2Features.mean(axis=0)
-            std = X_2Features.std(axis=0)
-            X_2Features = (X_2Features - mean) / std
+            # mean = X_2Features.mean(axis=0)
+            # std = X_2Features.std(axis=0)
+            # X_2Features = (X_2Features - mean) / std
 
             # Train
             clf = tree.DecisionTreeClassifier().fit(X_2Features, y)
@@ -124,7 +185,8 @@ class myClassifier(object):
             plt.xlabel(feature_names[pair[0]])
             plt.ylabel(feature_names[pair[1]])
 
-            plt.subplot(1, 3, plot_idx)
+
+            plt.subplot(cant_tagert, cant_tagert, (pairidx + 1))
 
 
             # Now plot the decision boundary using a fine mesh as input to a
@@ -162,7 +224,7 @@ class myClassifier(object):
         plt.suptitle(title)
         plt.axis("tight")
 
-        print ('Generando PDF')
+        print ('Generando PDF DesicionBoundary - straigh')
         pp = PdfPages(fileName + '- DesicionBoundary - straigh.pdf')
         plt.savefig(pp, format='pdf')
         pp.close()
