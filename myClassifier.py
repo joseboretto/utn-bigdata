@@ -1,4 +1,4 @@
-from sklearn import tree
+from sklearn import tree, clone
 from IPython.display import Image
 import pydotplus
 import numpy as np
@@ -11,6 +11,8 @@ from mlxtend.plotting import plot_decision_regions
 # http://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html
 class myClassifier(object):
     def decisionTreeClassifier(self, X, Y, feature_names, target_names, fileName):
+        # http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
+
         clf = tree.DecisionTreeClassifier()
         clf = clf.fit(X, Y)
         dot_data = tree.export_graphviz(clf, out_file=None,
@@ -25,6 +27,7 @@ class myClassifier(object):
 
 
     def decisionTreeClassifierDesicionBoundary(self, X, Y, feature_names, target_names,fileName):
+        # http://scikit-learn.org/stable/auto_examples/tree/plot_iris.html
         # Parameters
         n_classes = 3
         plot_colors = "bry"
@@ -42,6 +45,7 @@ class myClassifier(object):
 
             # Train
             clf = tree.DecisionTreeClassifier().fit(X_2features, Y)
+
 
             # Plot the decision boundary
             plt.subplot(1, 3, pairidx + 1)
@@ -75,25 +79,97 @@ class myClassifier(object):
 
 
 
+    def decisionTreeClassifierDesicionBoundary2(self, X, Y, feature_names, target_names, fileName):
+
+        # http://scikit-learn.org/stable/auto_examples/ensemble/plot_forest_iris.html
+        # Parameters
+        n_classes = 3
+        plot_colors = "ryb"
+        cmap = plt.cm.RdYlBu
+        plot_step = 0.02  # fine step width for decision surface contours
+        plot_step_coarser = 0.5  # step widths for coarse classifier guesses
+        RANDOM_SEED = 1  # fix the seed on each iteration
+        plot_idx = 1
+
+        for pairidx, pair in enumerate([[0, 1], [0, 2], [1, 2]]):
 
 
+            # We only take the two corresponding features
+            X_2Features = X[:, pair]
+            y = Y
 
+            # Shuffle
+            idx = np.arange(X_2Features.shape[0])
+            np.random.seed(RANDOM_SEED)
+            np.random.shuffle(idx)
+            X_2Features = X_2Features[idx]
+            # y = y[idx]
 
+            # Standardize
+            mean = X_2Features.mean(axis=0)
+            std = X_2Features.std(axis=0)
+            X_2Features = (X_2Features - mean) / std
 
+            # Train
+            clf = tree.DecisionTreeClassifier().fit(X_2Features, y)
 
+            scores = clf.score(X_2Features, y)
+            # Create a title for each column and the console by using str() and
+            # slicing away useless parts of the string
+            model_title = "DecisionTreeClassifier"
+            model_details = model_title
+            if hasattr(tree.DecisionTreeClassifier(max_depth=None), "estimators_"):
+                model_details += " with {} estimators".format(len(model.estimators_))
+            print(model_details + " with features", pair, "has a score of", scores)
 
-    def plot_coefficients(self, classifier, feature_names, top_features=2):
-        # feature_names = ['Stage', 'Cantidad de faltas', '% Posesion','Cantidad de tiros al arco','Mes jugado''Stage', 'Cantidad de faltas', '% Posesion','Cantidad de tiros al arco','Mes jugado''Stage', 'Cantidad de faltas', '% Posesion','Cantidad de tiros al arco','Mes jugado']
-        # https://medium.com/@aneesha/visualising-top-features-in-linear-svm-with-scikit-learn-and-matplotlib-3454ab18a14d
-        coef = classifier.coef_.ravel()
-        top_positive_coefficients = np.argsort(coef)[-top_features:]
-        top_negative_coefficients = np.argsort(coef)[:top_features]
-        top_coefficients = np.hstack([top_negative_coefficients, top_positive_coefficients])
-        # create plot
-        plt.figure(figsize=(15, 5))
-        colors = ['red' if c < 0 else 'blue' for c in coef[top_coefficients]]
-        plt.bar(np.arange(2 * top_features), coef[top_coefficients], color=colors)
-        feature_names = np.array(feature_names)
-        plt.xticks(np.arange(1, 1 + 2 * top_features), feature_names[top_coefficients], rotation=60, ha='right')
+            plt.subplot(1, 3, plot_idx)
+            plt.title(model_title)
+
+            # Now plot the decision boundary using a fine mesh as input to a
+            # filled contour plot
+            x_min, x_max = X_2Features[:, 0].min() - 1, X_2Features[:, 0].max() + 1
+            y_min, y_max = X_2Features[:, 1].min() - 1, X_2Features[:, 1].max() + 1
+            xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
+                                 np.arange(y_min, y_max, plot_step))
+
+            # Plot either a single DecisionTreeClassifier or alpha blend the
+            # decision surfaces of the ensemble of classifiers
+
+            Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+            Z = Z.reshape(xx.shape)
+            cs = plt.contourf(xx, yy, Z, cmap=cmap)
+
+            # Build a coarser grid to plot a set of ensemble classifications
+            # to show how these are different to what we see in the decision
+            # surfaces. These points are regularly space and do not have a black outline
+            xx_coarser, yy_coarser = np.meshgrid(np.arange(x_min, x_max, plot_step_coarser),
+                                                 np.arange(y_min, y_max, plot_step_coarser))
+            Z_points_coarser = clf.predict(np.c_[xx_coarser.ravel(), yy_coarser.ravel()]).reshape(
+                xx_coarser.shape)
+            cs_points = plt.scatter(xx_coarser, yy_coarser, s=15, c=Z_points_coarser, cmap=cmap, edgecolors="none")
+
+            # Plot the training points, these are clustered together and have a
+            # black outline
+            for i, c in zip(xrange(n_classes), plot_colors):
+                idx = np.where(y == i)
+                plt.scatter(X[idx, 0], X[idx, 1], c=c, label=target_names[i],
+                            cmap=cmap)
+
+            plot_idx += 1  # move on to the next plot in sequence
+
+        plt.suptitle("Classifiers on feature subsets of the Iris dataset")
+        plt.axis("tight")
+
         plt.show()
+
+
+
+
+
+
+
+
+
+
+
 

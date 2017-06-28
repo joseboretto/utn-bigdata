@@ -1,3 +1,31 @@
+#import
+from pandas.plotting import scatter_matrix
+import pandas as pd
+import matplotlib.pyplot as plt
+# %matplotlib nbagg
+
+from myData import Data
+dataObject = Data()
+#clsifiers
+from sklearn import tree
+from IPython.display import Image
+import pydotplus
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import style
+#plot
+from pandas.plotting import scatter_matrix
+import pandas as pd
+pd.set_option('display.notebook_repr_html', True)
+import matplotlib.pyplot as plt
+from plotly.offline.offline import matplotlib
+#table
+from IPython.display import display, HTML
+import tabulate
+
+import numpy as np
+#import
+
 #%%
 from myData import Data
 dataObject = Data()
@@ -6,6 +34,9 @@ myClassifier = myClassifier()
 from myPlot import myPlot
 myPlotObject = myPlot()
 import numpy as np
+#table
+from IPython.display import display, HTML
+import tabulate
 # https://www.premierleague.com/clubs/12/club/stats?se=42
 # AND season IN ('2013/2014', '2014/2015', '2015/2016')
 
@@ -14,13 +45,14 @@ seasonB = ' \'2014/2015\' '
 seasonC = ' \'2015/2016\' '
 season = '('+seasonA +','+ seasonB +','+ seasonC+')'
 
+BayerMunich = 9823
 LeicesterCity = 8197
 ManchesterCity = 8456
 Barcelona = 8634
 Arsenal = 9825 # Ganados: 20 Enpatados: 11 Perdidos: 7
 Chelsea = 8455 # tiene las clases mas balanceadas 12,14,12
 
-teamApiId = Arsenal
+teamApiId = BayerMunich
 
 teamName = dataObject.getTeamName(teamApiId)
 matches = dataObject.getMatchesFromDataBase(teamApiId , season)
@@ -81,12 +113,25 @@ X = np.column_stack((crosses,numberOfFoulCommit, numberOfShotOn))
 print feature_names
 print X
 print X.shape
+#mostra una linda tabla
+matrixA={}
+matrixA['Corners']=crosses
+matrixA['Foules']=numberOfFoulCommit
+matrixA['Tiros al arco']=numberOfShotOn
+
+dataFrameX = pd.DataFrame(matrixA)
+display(dataFrameX)
+HTML(dataFrameX.to_html())
+
 Y = matchResultNumber
 class_names = ["Perdio" ,"Empato" , "Gano"]
 
 myClassifier.decisionTreeClassifier(X, Y, feature_names, class_names, teamName)
 
 myClassifier.decisionTreeClassifierDesicionBoundary(X, Y, feature_names, class_names, teamName)
+
+
+myClassifier.decisionTreeClassifierDesicionBoundary2(X, Y, feature_names, class_names, teamName)
 
 # myClassifier.decisionTreeClassifier(X, Y, feature_names, class_names, teamName)
 
