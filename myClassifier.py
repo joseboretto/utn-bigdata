@@ -18,7 +18,7 @@ class myClassifier(object):
                                         filled=True, rounded=True,
                                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data)
-        graph.write_pdf(fileName + '- Arbol.pdf')
+        graph.write_png(fileName + '- Arbol.png')
 
     def decisionTreeClassifierMaxDepth(self, X, Y, feature_names, target_names, fileName,maxdepth):
         # http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
@@ -30,7 +30,7 @@ class myClassifier(object):
                                         filled=True, rounded=True,
                                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data)
-        graph.write_pdf(fileName + '- Arbol - max depth ' + str(maxdepth) +'.pdf')
+        graph.write_png(fileName + '- Arbol - max depth ' + str(maxdepth) +'.png')
 
     def decisionTreeClassifierMinLeaf(self, X, Y, feature_names, target_names, fileName,MinLeaf):
         # http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
@@ -42,11 +42,11 @@ class myClassifier(object):
                                         filled=True, rounded=True,
                                         special_characters=True)
         graph = pydotplus.graph_from_dot_data(dot_data)
-        graph.write_pdf(fileName + '- Arbol - Min Leaf ' + str(MinLeaf) +'.pdf')
+        graph.write_png(fileName + '- Arbol - Min Leaf ' + str(MinLeaf) +'.png')
 
     def decisionTreeClassifierDesicionBoundaryStraigh(self, X, Y, feature_names, target_names, fileName, title, coloursList):
         # guardo pdf
-        fig = plt.figure()
+        # fig = plt.figure()
         # http://scikit-learn.org/stable/auto_examples/ensemble/plot_forest_iris.html
         # Parameters
         n_classes = 3
@@ -57,14 +57,19 @@ class myClassifier(object):
         RANDOM_SEED = 1  # fix the seed on each iteration
         plot_idx = 1
 
-        cant_tagert = len(target_names)
+        cant_feature = len(feature_names)
         plt.figure(figsize=(10, 10))
-        for pairidx, pair in enumerate([[0, 0], [1, 0], [2, 0],
-                                        [0, 1], [1, 1], [2, 1],
-                                        [0, 2], [1, 2], [2, 2]]):
-            # dont plot the diagonal
-            if pair[0] == pair[1]:
-                continue
+        # ['Corners','Foules', 'Tiros al arco']
+        # x_axis_values = X_2Features[:, 0]
+        # y_axis_values = X_2Features[:, 1]
+        for pairidx, pair in enumerate([
+                                        [0, 0], [1, 0], [2, 0], [3, 0], [4, 0],
+                                        [0, 1], [1, 1], [2, 1], [3, 1], [4, 1],
+                                        [0, 2], [1, 2], [2, 2], [3, 2], [4, 2],
+                                        [0, 3], [1, 3], [2, 3], [3, 3], [4, 3],
+                                        [0, 4], [1, 4], [2, 4], [3, 4], [4, 4]
+                                       ]):
+
             # We only take the two corresponding features
             X_2Features = X[:, pair]
             y = Y
@@ -74,12 +79,6 @@ class myClassifier(object):
             np.random.seed(RANDOM_SEED)
             np.random.shuffle(idx)
             X_2Features = X_2Features[idx]
-            # y = y[idx]
-
-            # Standardize
-            # mean = X_2Features.mean(axis=0)
-            # std = X_2Features.std(axis=0)
-            # X_2Features = (X_2Features - mean) / std
 
             # Train
             clf = tree.DecisionTreeClassifier().fit(X_2Features, y)
@@ -91,17 +90,17 @@ class myClassifier(object):
                                             filled=True, rounded=True,
                                             special_characters=True)
             graph = pydotplus.graph_from_dot_data(dot_data)
-            graph.write_pdf(fileName + '- Arbol - pos - ' + str(pair) + ' .pdf')
+            graph.write_png('original/' + fileName + '- Arbol - pos - ' + str(pair) + ' .png')
 
 
             scores = clf.score(X_2Features, y)
             # Create a title for each column and the console by using str() and
             # slicing away useless parts of the string
+            plt.subplot(cant_feature, cant_feature, (pairidx + 1))
             plt.xlabel(feature_names[pair[0]])
             plt.ylabel(feature_names[pair[1]])
 
 
-            plt.subplot(cant_tagert, cant_tagert, (pairidx + 1))
 
 
             # Now plot the decision boundary using a fine mesh as input to a
@@ -148,9 +147,9 @@ class myClassifier(object):
         plt.axis("tight")
 
         print ('Generando PDF DesicionBoundary - straigh')
-        pp = PdfPages(fileName + '- DesicionBoundary.pdf')
-        plt.savefig(pp, format='pdf')
-        pp.close()
+        # pp = PdfPages(fileName + '- DesicionBoundary.png')
+        plt.savefig(fileName + '- DesicionBoundary.png')
+        # pp.close()
 
         # maximizo el tamano
         mng = plt.get_current_fig_manager()
@@ -160,7 +159,7 @@ class myClassifier(object):
     def decisionTreeClassifierDesicionBoundaryStraighDepth(self, X, Y, feature_names, target_names, fileName, title,
                                                       coloursList, maxDepth):
         # guardo pdf
-        fig = plt.figure()
+        # fig = plt.figure()
         # http://scikit-learn.org/stable/auto_examples/ensemble/plot_forest_iris.html
         # Parameters
         n_classes = 3
@@ -171,14 +170,21 @@ class myClassifier(object):
         RANDOM_SEED = 1  # fix the seed on each iteration
         plot_idx = 1
 
-        cant_tagert = len(target_names)
+        cant_feature = len(feature_names)
+
         plt.figure(figsize=(10, 10))
-        for pairidx, pair in enumerate([[0, 0], [1, 0], [2, 0],
-                                        [0, 1], [1, 1], [2, 1],
-                                        [0, 2], [1, 2], [2, 2]]):
+
+        for pairidx, pair in enumerate([
+            [0, 0], [1, 0], [2, 0], [3, 0], [4, 0],
+            [0, 1], [1, 1], [2, 1], [3, 1], [4, 1],
+            [0, 2], [1, 2], [2, 2], [3, 2], [4, 2],
+            [0, 3], [1, 3], [2, 3], [3, 3], [4, 3],
+            [0, 4], [1, 4], [2, 4], [3, 4], [4, 4]
+        ]):
+
             # dont plot the diagonal
-            if pair[0] == pair[1]:
-                continue
+            # if pair[0] == pair[1]:
+            #     continue
             # We only take the two corresponding features
             X_2Features = X[:, pair]
             y = Y
@@ -204,15 +210,15 @@ class myClassifier(object):
                                             filled=True, rounded=True,
                                             special_characters=True)
             graph = pydotplus.graph_from_dot_data(dot_data)
-            graph.write_pdf(fileName + '- Arbol - max depth ' + str(maxDepth) + ' - pos -'+ str(pair) +'.pdf')
+            graph.write_png('max depth '+ str(maxDepth)+'/' + fileName + '- Arbol - pos - ' + str(pair) + ' .png')
 
             scores = clf.score(X_2Features, y)
             # Create a title for each column and the console by using str() and
             # slicing away useless parts of the string
+            plt.subplot(cant_feature, cant_feature, (pairidx + 1))
             plt.xlabel(feature_names[pair[0]])
             plt.ylabel(feature_names[pair[1]])
 
-            plt.subplot(cant_tagert, cant_tagert, (pairidx + 1))
 
             # Now plot the decision boundary using a fine mesh as input to a
             # filled contour plot
@@ -258,9 +264,7 @@ class myClassifier(object):
         plt.axis("tight")
 
         print ('Generando PDF DesicionBoundary - straigh - max depth' , maxDepth)
-        pp = PdfPages(fileName + '- DesicionBoundary - max depth'+ str(maxDepth) +'.pdf')
-        plt.savefig(pp, format='pdf')
-        pp.close()
+        plt.savefig(fileName + '- DesicionBoundary - max depth'+ str(maxDepth) +'.png')
 
         # maximizo el tamano
         mng = plt.get_current_fig_manager()
@@ -270,7 +274,7 @@ class myClassifier(object):
     def decisionTreeClassifierDesicionBoundaryStraighMinLeaf(self, X, Y, feature_names, target_names, fileName, title,
                                                            coloursList, MinLeaf):
         # guardo pdf
-        fig = plt.figure()
+        # fig = plt.figure()
         # http://scikit-learn.org/stable/auto_examples/ensemble/plot_forest_iris.html
         # Parameters
         n_classes = 3
@@ -281,14 +285,20 @@ class myClassifier(object):
         RANDOM_SEED = 1  # fix the seed on each iteration
         plot_idx = 1
 
-        cant_tagert = len(target_names)
+        cant_feature = len(feature_names)
+
         plt.figure(figsize=(10, 10))
-        for pairidx, pair in enumerate([[0, 0], [1, 0], [2, 0],
-                                        [0, 1], [1, 1], [2, 1],
-                                        [0, 2], [1, 2], [2, 2]]):
+        for pairidx, pair in enumerate([
+                                        [0, 0], [1, 0], [2, 0],[3, 0], [4, 0],
+                                        [0, 1], [1, 1], [2, 1], [3, 1], [4, 1],
+                                        [0, 2], [1, 2], [2, 2], [3, 2], [4, 2],
+                                        [0, 3], [1, 3], [2, 3], [3, 3], [4, 3],
+                                        [0, 4], [1, 4], [2, 4], [3, 4], [4, 4]
+
+                                       ]):
             # dont plot the diagonal
-            if pair[0] == pair[1]:
-                continue
+            # if pair[0] == pair[1]:
+            #     continue
             # We only take the two corresponding features
             X_2Features = X[:, pair]
             y = Y
@@ -314,15 +324,14 @@ class myClassifier(object):
                                             filled=True, rounded=True,
                                             special_characters=True)
             graph = pydotplus.graph_from_dot_data(dot_data)
-            graph.write_pdf(fileName + '- Arbol - Min Leaf ' + str(MinLeaf) + ' - pos -' + str(pair) + '.pdf')
+            graph.write_png('min leaf '+ str(MinLeaf)+'/' + fileName + '- Arbol - pos - ' + str(pair) + ' .png')
 
             scores = clf.score(X_2Features, y)
             # Create a title for each column and the console by using str() and
             # slicing away useless parts of the string
+            plt.subplot(cant_feature, cant_feature, (pairidx + 1))
             plt.xlabel(feature_names[pair[0]])
             plt.ylabel(feature_names[pair[1]])
-
-            plt.subplot(cant_tagert, cant_tagert, (pairidx + 1))
 
             # Now plot the decision boundary using a fine mesh as input to a
             # filled contour plot
@@ -368,9 +377,8 @@ class myClassifier(object):
         plt.axis("tight")
 
         print ('Generando PDF DesicionBoundary - straigh - Min Leaf', MinLeaf)
-        pp = PdfPages(fileName + '- DesicionBoundary - Min Leaf' + str(MinLeaf) + '.pdf')
-        plt.savefig(pp, format='pdf')
-        pp.close()
+        plt.savefig(fileName + '- DesicionBoundary - Min Leaf' + str(MinLeaf) + '.png')
+
 
         # maximizo el tamano
         mng = plt.get_current_fig_manager()

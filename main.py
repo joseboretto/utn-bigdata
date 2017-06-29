@@ -37,22 +37,21 @@ teamApiId = Chelsea
 print ('#CONSULTAS SQL')
 teamName = dataObject.getTeamName(teamApiId)
 matches = dataObject.getMatchesFromDataBase(teamApiId , season)
+numberOfMatches = len(matches)
 
 #ETL
-numberOfMatches = len(matches)
 posPossesionAverage = dataObject.getPossesionAverage(matches, teamApiId)
 numberOfFoulCommit = dataObject.getNumberOfFoulCommit(matches, teamApiId)
 numberOfShotOn = dataObject.getNumberOfShotOn(matches, teamApiId)
-stage = dataObject.getStage(matches)
-yellowCards = dataObject.getNumberOfCards(matches, teamApiId, 'y')
 corners = dataObject.getNumberOfCorner(matches, teamApiId)
 crosses = dataObject.getNumberOfCross(matches, teamApiId)
+
 matchResultColor = dataObject.getMatchResultColor(matches, teamApiId)
 matchResultNumber = dataObject.getMatchResultNumber(matches, teamApiId)
 
 #JUNTO TODOS LOS DATOS LIMPIOS
-feature_names = ['Corners','Foules', 'Tiros al arco']
-X = np.column_stack((crosses,numberOfFoulCommit, numberOfShotOn))
+feature_names = ['posesion','cantidad de faltas','tiros al arco','corners','cruces']
+X = np.column_stack((posPossesionAverage,numberOfFoulCommit,numberOfShotOn,corners,crosses))
 target_names = ["Perdio" , "Empato" , "Gano"]
 Y = matchResultNumber
 
