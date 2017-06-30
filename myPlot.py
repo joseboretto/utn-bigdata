@@ -11,9 +11,7 @@ class myPlot(object):
         scatter_matrix(df, figsize=(10, 10), diagonal='hist', color=color)
         plt.suptitle(title)
         print ('Generando PDF')
-        pp = PdfPages(fileName + '- Grafico.pdf')
-        plt.savefig(pp, format='pdf')
-        pp.close()
+        plt.savefig(fileName + '/Grafico.png')
 
         # maximizo el tamano
         mng = plt.get_current_fig_manager()

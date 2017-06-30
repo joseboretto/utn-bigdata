@@ -11,6 +11,7 @@ import pandas as pd
 #table
 from IPython.display import display, HTML
 import plotly
+import os
 plotly.__version__
 
 import matplotlib.pyplot as plt
@@ -25,13 +26,14 @@ ManchesterCity = 8456
 Barcelona = 8634
 Arsenal = 9825 # Ganados: 20 Enpatados: 11 Perdidos: 7
 Chelsea = 8455 # tiene las clases mas balanceadas 12,14,12
+AtleticoDeMadrid = 9906
 
-seasonA = ' \'2013/2014\' '
+
 seasonB = ' \'2014/2015\' '
 seasonC = ' \'2015/2016\' '
 #SELECIONO PARAMETROS
-season = '('+seasonA +','+ seasonB +','+ seasonC+')'
-teamApiId = Chelsea
+season = '('+seasonB +','+ seasonC+')'
+teamApiId = AtleticoDeMadrid
 
 #CONSULTAS SQL
 print ('#CONSULTAS SQL')
@@ -45,7 +47,9 @@ numberOfFoulCommit = dataObject.getNumberOfFoulCommit(matches, teamApiId)
 numberOfShotOn = dataObject.getNumberOfShotOn(matches, teamApiId)
 corners = dataObject.getNumberOfCorner(matches, teamApiId)
 crosses = dataObject.getNumberOfCross(matches, teamApiId)
-
+#tabla
+stage = dataObject.getStage(matches)
+#plot
 matchResultColor = dataObject.getMatchResultColor(matches, teamApiId)
 matchResultNumber = dataObject.getMatchResultNumber(matches, teamApiId)
 
@@ -57,13 +61,18 @@ Y = matchResultNumber
 
 #MUESTRO EN UNA TABLA
 matrixTable={}
-matrixTable['Corners']=crosses
-matrixTable['Foules']=numberOfFoulCommit
-matrixTable['Tiros al arco']=numberOfShotOn
-matrixTable['z Resultado']=matchResultNumber
+matrixTable['0.id.stage']=stage
+matrixTable['1.posesion']=posPossesionAverage
+matrixTable['2.cantidad de faltas']=numberOfFoulCommit
+matrixTable['3.tiros al arco']=numberOfShotOn
+matrixTable['4.corners']=corners
+matrixTable['5.cruces']=crosses
+matrixTable['Resultados']=matchResultNumber
+matrixTable['Color']=matchResultColor
 dataFrameX = pd.DataFrame(matrixTable)
-# display(dataFrameX)
+
 print tabulate(dataFrameX, headers='keys', tablefmt='psql')
+
 
 #PREPARO EL TITULO DE LOS DATOS
 numberOfWinTieLose = dataObject.getNumberOfWinTieLose(matches,teamApiId)
@@ -73,26 +82,33 @@ lose = str(numberOfWinTieLose[2])
 title = 'Equipo: ' + teamName + ' -- Temporada:' + season + ' -- Cantidad de partidos:' + str(numberOfMatches) \
         + '\n  Ganados: ' + win + ' Enpatados: ' + tie + ' Perdidos: ' + lose
 
+# save table
+if not os.path.exists(teamName):
+    os.makedirs(teamName)
 
-#GRAFICO TODOS LOS PARTIDOS EN DISTINTOS EJES
-myPlotObject.plot(X, feature_names, matchResultColor, title, teamName)
+text_file = open(teamName + '/' +teamName + "- table.txt", "w")
+text_file.write(title + "\n" + "\n Rojo(-1)=Perdio , Amarillo(0)=Enpato  , Azul(1)=Gano \n\n\n"+ tabulate(dataFrameX, headers='keys', tablefmt='psql'))
+text_file.close()
+
+
+# GRAFICO TODOS LOS PARTIDOS EN DISTINTOS EJES
+# myPlotObject.plot(X, feature_names, matchResultColor, title, teamName)
 
 
 # GRAFICO LIMITES DE DESICION DE FORMA RECTA
-myClassifier.decisionTreeClassifierDesicionBoundaryStraigh(X, Y, feature_names, target_names, teamName,title,matchResultColor)
+# myClassifier.decisionTreeClassifierDesicionBoundaryStraigh(X, Y, feature_names, target_names, teamName,title,matchResultColor)
 
-myClassifier.decisionTreeClassifierDesicionBoundaryStraighDepth(X, Y, feature_names, target_names, teamName,title,matchResultColor,1)
+
+###GRAFICO SCATER MATRIX Y SUPERFICIES DE DESICION
+# myClassifier.decisionTreeClassifierDesicionBoundaryStraighDepth(X, Y, feature_names, target_names, teamName,title,matchResultColor,1)
 myClassifier.decisionTreeClassifierDesicionBoundaryStraighDepth(X, Y, feature_names, target_names, teamName,title,matchResultColor,2)
 myClassifier.decisionTreeClassifierDesicionBoundaryStraighDepth(X, Y, feature_names, target_names, teamName,title,matchResultColor,5)
 
-myClassifier.decisionTreeClassifierDesicionBoundaryStraighMinLeaf(X, Y, feature_names, target_names, teamName,title,matchResultColor,1)
-myClassifier.decisionTreeClassifierDesicionBoundaryStraighMinLeaf(X, Y, feature_names, target_names, teamName,title,matchResultColor,2)
-myClassifier.decisionTreeClassifierDesicionBoundaryStraighMinLeaf(X, Y, feature_names, target_names, teamName,title,matchResultColor,5)
+
 
 # GRAFICO LIMITES DE DESICION ARBOL DE DESICION
-myClassifier.decisionTreeClassifier(X, Y, feature_names, target_names, teamName)
-myClassifier.decisionTreeClassifierMaxDepth(X, Y, feature_names, target_names, teamName,5)
-
+# myClassifier.decisionTreeClassifier(X, Y, feature_names, target_names, teamName)
+# myClassifier.decisionTreeClassifierMaxDepth(X, Y, feature_names, target_names, teamName,5)
 
 
 
